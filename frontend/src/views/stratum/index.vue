@@ -18,6 +18,36 @@
       </article>
     </div>
 
+    <section class="review-ledger">
+      <header class="review-head">
+        <h3>地层待补录台账核查事项</h3>
+        <span class="legend-item">待补录 {{ pendingRows.length }} 条</span>
+      </header>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>地层编号</th>
+            <th>所属探方</th>
+            <th>层位序号</th>
+            <th>当前状态</th>
+            <th>核查事项</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in pendingRows" :key="String(row.id)">
+            <td>{{ row['地层编号'] }}</td>
+            <td>{{ row['所属探方'] }}</td>
+            <td>{{ row['层位序号'] }}</td>
+            <td>{{ row.status }}</td>
+            <td>{{ row['核查事项'] || '停用探方触发待补录，请核查土质土色、包含物与剖面图' }}</td>
+          </tr>
+          <tr v-if="!pendingRows.length">
+            <td colspan="5" class="empty-state">暂无待补录地层，停用关联探方后此处会自动新增核查事项</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
     <p class="status-legend">
       <span v-for="item in statusSummary" :key="item.status" class="legend-item">
         {{ item.status }}：{{ item.count }}
@@ -37,6 +67,7 @@
       <thead>
         <tr>
           <th v-for="column in columns" :key="column">{{ column }}</th>
+          <th>核查事项</th>
           <th>当前状态</th>
           <th>可执行动作</th>
         </tr>
@@ -44,6 +75,7 @@
       <tbody>
         <tr v-for="row in rows" :key="String(row.id)">
           <td v-for="column in columns" :key="column">{{ row[column] ?? '—' }}</td>
+          <td>{{ row['核查事项'] || '—' }}</td>
           <td>{{ row.status }}</td>
           <td class="row-actions">
             <button
@@ -58,7 +90,7 @@
           </td>
         </tr>
         <tr v-if="!rows.length">
-          <td :colspan="columns.length + 2" class="empty-state">暂无地层记录数据，可先登记地层</td>
+          <td :colspan="columns.length + 3" class="empty-state">暂无地层记录数据，可先登记地层</td>
         </tr>
       </tbody>
     </table>
@@ -92,6 +124,12 @@ const total = ref(0)
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
 const filterFields = columns.slice(0, 3)
+const tick = ref(0)
+// 台账走同一条取数路径：状态 = 需补录 的地层即待核查事项来源。
+const pendingRows = computed(() => {
+  void tick.value
+  return listEntries(meta.key, { 状态: '需补录' }).items
+})
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
@@ -128,6 +166,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    tick.value += 1
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '地层记录列表读取失败'
   }
