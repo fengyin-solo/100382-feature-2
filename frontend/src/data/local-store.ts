@@ -57,3 +57,35 @@ export function resetRows(key: string): EntryRow[] {
 export function storageKey(): string {
   return STORAGE_KEY
 }
+
+// 与业务记录分开存放的本地台账（当班检索书签、地层待补录核查事项），
+// 各自独立读写，避免污染既有 entries 取数路径。
+function readDocument<T>(storageKey: string, fallback: T): T {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return fallback
+  }
+  const raw = window.localStorage.getItem(storageKey)
+  if (!raw) {
+    return fallback
+  }
+  try {
+    return JSON.parse(raw) as T
+  } catch {
+    return fallback
+  }
+}
+
+function writeDocument<T>(storageKey: string, value: T): void {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    window.localStorage.setItem(storageKey, JSON.stringify(value))
+  }
+}
+
+export function loadDocuments<T>(storageKey: string): T[] {
+  const value = readDocument<T[]>(storageKey, [])
+  return Array.isArray(value) ? value : []
+}
+
+export function saveDocuments<T>(storageKey: string, documents: T[]): void {
+  writeDocument(storageKey, documents)
+}

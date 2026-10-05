@@ -33,6 +33,51 @@
       <button class="btn ghost" type="button" @click="resetFilters">重置条件</button>
     </form>
 
+    <section class="check-ledger">
+      <header class="check-ledger-head">
+        <h3>地层待补录 · 探方停用核查事项（{{ pendingChecks.length }} 项待核查）</h3>
+        <label class="check-toggle">
+          <input v-model="showResolved" type="checkbox" @change="reloadChecks" />
+          显示已办结
+        </label>
+      </header>
+      <p v-if="!checks.length" class="empty-state">暂无停用核查事项</p>
+      <table v-else class="data-table check-table">
+        <thead>
+          <tr>
+            <th>停用探方</th>
+            <th>所属发掘区</th>
+            <th>关联地层</th>
+            <th>核查事项</th>
+            <th>登记时间</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in checks" :key="item.id" :class="{ resolved: item.resolved }">
+            <td>{{ item.trenchCode }}</td>
+            <td>{{ item.area }}</td>
+            <td>{{ item.stratumCode }}</td>
+            <td>{{ item.reason }}</td>
+            <td>{{ formatTime(item.createdAt) }}</td>
+            <td>{{ item.resolved ? '已办结' : '待核查' }}</td>
+            <td>
+              <button
+                v-if="!item.resolved"
+                class="link"
+                type="button"
+                @click="finishCheck(item.id)"
+              >
+                核查办结
+              </button>
+              <span v-else>—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
     <table class="data-table">
       <thead>
         <tr>
@@ -76,22 +121,44 @@ import { computed, onMounted, ref } from 'vue'
 import {
   downloadEntries,
   listEntries,
+  listStratumChecks,
   moduleMeta,
+  resolveStratumCheck,
   runAction as applyAction,
 } from '@/api/local-service'
-import type { EntryRow } from '@/data/types'
+import type { EntryRow, StratumCheck } from '@/data/types'
 
 const meta = moduleMeta('stratum')
-const columns = ["地层编号", "所属探方", "层位序号", "土质描述", "土色描述", "包含物特征", "记录人", "记录状态"]
-const actions = ["提交记录", "完成校核", "退回补录"]
-const statuses = ["已划分", "已记录", "已校核", "需补录"]
+const columns = meta.fields
+const actions = meta.actions
+const statuses = meta.statuses
 const stats = [{"label": "地层总数", "value": 0}, {"label": "已校核层数", "value": 0}, {"label": "待记录层数", "value": 0}]
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
-const filterFields = columns.slice(0, 3)
+const filterFields = ['所属探方', '层位序号', '土质描述']
+const checks = ref<StratumCheck[]>([])
+const showResolved = ref(false)
+const pendingChecks = computed(() => checks.value.filter((item) => !item.resolved))
+
+function formatTime(iso: string): string {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) {
+    return iso
+  }
+  return date.toLocaleString('zh-CN', { hour12: false })
+}
+
+function reloadChecks() {
+  checks.value = listStratumChecks(showResolved.value)
+}
+
+function finishCheck(id: number) {
+  resolveStratumCheck(id)
+  reloadChecks()
+}
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
@@ -133,5 +200,8 @@ function reload() {
   }
 }
 
-onMounted(reload)
+onMounted(() => {
+  reload()
+  reloadChecks()
+})
 </script>

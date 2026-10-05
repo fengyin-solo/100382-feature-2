@@ -35,3 +35,44 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .error-text { color: #b42318; }
 .status-legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 10px; font-size: 12px; color: var(--muted); }
 .legend-item { background: #eef2f7; border-radius: 999px; padding: 2px 10px; }
+.scope-bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; font-size: 13px; }
+.scope-label { font-weight: 600; }
+.scope-tag { display: inline-flex; gap: 4px; align-items: center; cursor: pointer; }
+.scope-hint { color: var(--muted); font-size: 12px; }
+.segment-nav { display: flex; gap: 8px; margin: 4px 0 12px; }
+.segment-tab { border: 1px solid var(--border); background: #fff; border-radius: 999px; padding: 6px 16px; cursor: pointer; font-size: 13px; }
+.segment-tab.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+.group-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.group-card { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; cursor: pointer; text-align: left; }
+.group-card:hover { border-color: var(--brand); box-shadow: 0 1px 4px rgba(31, 111, 235, 0.15); }
+.group-name { font-size: 14px; font-weight: 600; }
+.group-count { font-size: 12px; color: var(--muted); }
+.drill-panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+.drill-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.drill-head h3 { margin: 0; font-size: 15px; flex: 1; }
+.pager { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 13px; color: var(--muted); }
+.pager .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.pager-jump { display: inline-flex; align-items: center; gap: 6px; margin-left: 8px; }
+.pager-jump input { width: 56px; border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; }
+.bookmark-banner { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: #eef6ff; border: 1px solid #b9d6fb; border-radius: 8px; padding: 8px 12px; font-size: 13px; margin-bottom: 10px; }
+.bookmark-banner.idle { background: #f8fafc; border-color: var(--border); color: var(--muted); }
+.bookmark-list { margin-top: 14px; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; }
+.bookmark-list h4 { margin: 0 0 8px; font-size: 14px; }
+.bookmark-list ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.bookmark-list li { display: flex; gap: 10px; align-items: center; font-size: 13px; }
+.bookmark-list li.current { font-weight: 600; }
+.bookmark-meta { color: var(--muted); font-size: 12px; flex: 1; }
+.link.danger { color: #b42318; }
+.notice-text { color: #1769a6; }
+.detail-mask { position: fixed; inset: 0; background: rgba(16, 24, 40, 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; }
+.detail-card { width: 560px; max-width: calc(100vw - 32px); max-height: calc(100vh - 64px); overflow: auto; background: #fff; border-radius: 10px; padding: 16px 18px; }
+.detail-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.detail-head h3 { margin: 0; font-size: 16px; }
+.detail-grid { display: grid; grid-template-columns: 120px 1fr; gap: 6px 12px; margin: 0 0 14px; font-size: 13px; }
+.detail-grid dt { color: var(--muted); }
+.detail-grid dd { margin: 0; }
+.detail-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.check-ledger { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; }
+.check-ledger-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.check-ledger-head h3 { margin: 0; font-size: 14px; }
+.check-table tr.resolved td { color: var(--muted); text-decoration: line-through; }
